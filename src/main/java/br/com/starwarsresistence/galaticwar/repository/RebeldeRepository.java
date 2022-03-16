@@ -1,6 +1,7 @@
 package br.com.starwarsresistence.galaticwar.repository;
 
 import br.com.starwarsresistence.galaticwar.domain.Rebelde;
+import br.com.starwarsresistence.galaticwar.dto.request.InventarioDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

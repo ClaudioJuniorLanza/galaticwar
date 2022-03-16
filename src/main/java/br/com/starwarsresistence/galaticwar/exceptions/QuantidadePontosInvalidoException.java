@@ -1,5 +1,9 @@
 package br.com.starwarsresistence.galaticwar.exceptions;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.BAD_REQUEST)
 public class QuantidadePontosInvalidoException extends Exception {
     public QuantidadePontosInvalidoException(){
         super(String.format("Ambos os lados deverão oferecer a mesma quantidade de pontos. Por exemplo, 1 arma\n" +

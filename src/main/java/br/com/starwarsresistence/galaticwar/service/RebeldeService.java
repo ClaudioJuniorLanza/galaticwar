@@ -1,7 +1,6 @@
 package br.com.starwarsresistence.galaticwar.service;
 
 import br.com.starwarsresistence.galaticwar.domain.Rebelde;
-import br.com.starwarsresistence.galaticwar.dto.mapper.LocalizacaoMapper;
 import br.com.starwarsresistence.galaticwar.dto.mapper.RebeldeMapper;
 import br.com.starwarsresistence.galaticwar.dto.request.LocalizacaoDTO;
 import br.com.starwarsresistence.galaticwar.dto.request.RebeldeDTO;
@@ -20,9 +19,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class RebeldeService {
 
+    private static final Integer MAX_RELATED_TRAIDOR = 2;
+    private static final Integer VALOR_CONTROLE = 1;
+
     private final RebeldeRepository rebeldeRepository;
     private final RebeldeMapper rebeldeMapper;
-    private final LocalizacaoMapper localizacaoMapper;
 
     public List<RebeldeDTO> findAll(){
         return rebeldeRepository.findAll()
@@ -60,9 +61,9 @@ public class RebeldeService {
     public void relatedTraidor(Long id) throws RebeldeNotFoundException {
         rebeldeRepository.findById(id)
                 .map( rebelde -> {
-                    rebelde.setReportTraidor(rebelde.getReportTraidor() + 1);
+                    rebelde.setReportTraidor(rebelde.getReportTraidor() + VALOR_CONTROLE);
                     return rebeldeRepository.save(rebelde);
-                }).orElseThrow( () -> new RebeldeNotFoundException(id) );
+                }).orElseThrow( () -> new RebeldeNotFoundException(id));
         verifyIsTraidor(id);
     }
 
@@ -73,16 +74,16 @@ public class RebeldeService {
         rebeldeRepository.save(rebelde);
     }
 
-    public void solicitaTroca(List<Long> listRebeldeId, char operacao) throws SolicitacaoTrocaException {
+    public void atualizaQuantidadeSolicitacaoTroca(List<Long> listRebeldeId, char operacao) throws SolicitacaoTrocaException {
         try{
             rebeldeRepository.findByIdIn(listRebeldeId).stream()
                     .map( rebelde -> {
                         switch (operacao){
                             case '+':
-                                rebelde.setQuantidadeSolicitacao(rebelde.getQuantidadeSolicitacao() + 1);
+                                rebelde.setQuantidadeSolicitacao(rebelde.getQuantidadeSolicitacao() + VALOR_CONTROLE);
                                 break;
                             case '-':
-                                rebelde.setQuantidadeSolicitacao(rebelde.getQuantidadeSolicitacao() - 1);
+                                rebelde.setQuantidadeSolicitacao(rebelde.getQuantidadeSolicitacao() - VALOR_CONTROLE);
                                 break;
                         }
                         return rebeldeRepository.save(rebelde);
@@ -90,15 +91,6 @@ public class RebeldeService {
         }catch (Exception e){
             throw new SolicitacaoTrocaException();
         }
-    }
-
-    private void verifyIsTraidor(Long id) {
-        rebeldeRepository.findById(id)
-                .map( rebelde -> {
-                    if (rebelde.getReportTraidor() > 2)
-                        rebelde.setTraidor(true);
-                    return rebeldeRepository.save(rebelde);
-                });
     }
 
     public RebeldeDTO verifyIsExistsRebelde(Long id) throws RebeldeNotFoundException {
@@ -111,5 +103,14 @@ public class RebeldeService {
                 .stream()
                 .map(rebeldeMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    private void verifyIsTraidor(Long id) {
+        rebeldeRepository.findById(id)
+                .map( rebelde -> {
+                    if (rebelde.getReportTraidor() > MAX_RELATED_TRAIDOR)
+                        rebelde.setTraidor(true);
+                    return rebeldeRepository.save(rebelde);
+                });
     }
 }

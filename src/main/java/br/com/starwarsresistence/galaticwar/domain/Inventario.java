@@ -2,7 +2,6 @@ package br.com.starwarsresistence.galaticwar.domain;
 
 import br.com.starwarsresistence.galaticwar.enums.ItensInventario;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

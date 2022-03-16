@@ -1,7 +1,6 @@
 package br.com.starwarsresistence.galaticwar.service;
 
 import br.com.starwarsresistence.galaticwar.domain.TrocaItem;
-import br.com.starwarsresistence.galaticwar.dto.mapper.InventarioMapper;
 import br.com.starwarsresistence.galaticwar.dto.mapper.TrocaItemMapper;
 import br.com.starwarsresistence.galaticwar.dto.request.InventarioDTO;
 import br.com.starwarsresistence.galaticwar.dto.request.RebeldeDTO;
@@ -31,7 +30,6 @@ public class TrocaItemService {
     private static final char DIVISAO = '/';
 
     private final RebeldeService rebeldeService;
-    private final InventarioMapper inventarioMapper;
     private final TrocaItemMapper trocaItemMapper;
     private final TrocaItemRepository trocaItemRepository;
 
@@ -44,29 +42,35 @@ public class TrocaItemService {
 
     }
 
-    private void atualizaQuantidadeSolicitacaoTrocaRebelde(List<Long> idsRebeldes, char operacao) throws SolicitacaoTrocaException {
-        rebeldeService.solicitaTroca(idsRebeldes, operacao);
+    public void hasTraidor(List<RebeldeDTO> rebeldeList) throws TraidorException {
+        boolean hasTraidor = rebeldeList.stream()
+                .anyMatch(RebeldeDTO::isTraidor);
+        if (hasTraidor){
+            throw new TraidorException();
+        }
     }
 
-    private Long salvarSolicitacao(TrocaItemDTO trocaItemDTO){
-        trocaItemDTO.setStatusSolicitacaoTroca(StatusTroca.PENDENTE.toString());
-        TrocaItem trocaItem = trocaItemMapper.toModel(trocaItemDTO);
-        TrocaItem trocaItemSave = trocaItemRepository.save(trocaItem);
-        return trocaItemSave.getId();
+    public List<TrocaItemDTO> searchSolicitacaoTrocaEnviada(Long id) {
+        return trocaItemRepository.findByIdRebeldeSolicitante(id)
+                .stream().map(trocaItemMapper::toDTO).collect(Collectors.toList());
     }
 
+    public List<TrocaItemDTO> searchSolicitacaoRecebida(Long id) {
+        return trocaItemRepository.findByIdRebeldeSolicitado(id)
+                .stream().map(trocaItemMapper::toDTO).collect(Collectors.toList());
+    }
 
-    public void validaRegrasParaTroca(TrocaItemDTO trocaItemDTO) throws TraidorException,
-            QuantidadeRebeldeParaTrocaException, ItensInvalidosParaTrocaException, QuantidadePontosInvalidoException {
-
-        List<Long> rebeldeListId = recuperaIdsRebeldes(trocaItemDTO);
-        List<RebeldeDTO> rebeldeList = rebeldeService.getRebeldeByListId(rebeldeListId);
-
-        hasTraidor(rebeldeList);
-        verificaQuantidadeRebeldesParaTroca(rebeldeList);
-        validaItensParaTroca(rebeldeList, trocaItemDTO);
-        validaPontosParaTroca(trocaItemDTO);
-
+    public void rejeitaTroca(Long id) throws TrocaItemNotFoundException, SolicitacaoTrocaException {
+        verifyIsExistsTroca(id);
+        Optional<Object> trocaItemDTO = trocaItemRepository.findById(id)
+                .map(trocaItem -> {
+                    trocaItem.setStatusSolicitacaoTroca(StatusTroca.RECUSADO);
+                    return trocaItemRepository.save(trocaItem);
+                });
+        if (trocaItemDTO.isPresent()){
+            TrocaItemDTO trocaItem = TrocaItemDTO.builder().build();
+            atualizaQuantidadeSolicitacaoTrocaRebelde(recuperaIdsRebeldes(trocaItem), SUBTRACAO);
+        }
     }
 
     public void efetuaTroca(Long id) throws RebeldeNotFoundException, StatusTrocaException, TrocaItemNotFoundException, SolicitacaoTrocaException {
@@ -96,8 +100,41 @@ public class TrocaItemService {
         atualizaQuantidadeSolicitacaoTrocaRebelde(recuperaIdsRebeldes(trocaItemDTO), SUBTRACAO);
     }
 
+    private void validaRegrasParaTroca(TrocaItemDTO trocaItemDTO) throws TraidorException,
+            QuantidadeRebeldeParaTrocaException, ItensInvalidosParaTrocaException, QuantidadePontosInvalidoException {
+
+        List<Long> rebeldeListId = recuperaIdsRebeldes(trocaItemDTO);
+        List<RebeldeDTO> rebeldeList = rebeldeService.getRebeldeByListId(rebeldeListId);
+
+        hasTraidor(rebeldeList);
+        verificaQuantidadeRebeldesParaTroca(rebeldeList);
+        validaItensParaTroca(rebeldeList, trocaItemDTO);
+        validaPontosParaTroca(trocaItemDTO);
+
+    }
+
+    private List<Long> recuperaIdsRebeldes(TrocaItemDTO trocaItemDTO){
+        return Arrays.asList(trocaItemDTO.getIdRebeldeSolicitante(), trocaItemDTO.getIdRebeldeSolicitado());
+    }
+
+    private TrocaItemDTO verifyIsExistsTroca(Long id) throws TrocaItemNotFoundException {
+        return trocaItemRepository.findById(id).map(trocaItemMapper::toDTO)
+                .orElseThrow(() -> new TrocaItemNotFoundException(id));
+    }
+
+    private void atualizaQuantidadeSolicitacaoTrocaRebelde(List<Long> idsRebeldes, char operacao) throws SolicitacaoTrocaException {
+        rebeldeService.atualizaQuantidadeSolicitacaoTroca(idsRebeldes, operacao);
+    }
+
+    private Long salvarSolicitacao(TrocaItemDTO trocaItemDTO){
+        trocaItemDTO.setStatusSolicitacaoTroca(StatusTroca.PENDENTE.toString());
+        TrocaItem trocaItem = trocaItemMapper.toModel(trocaItemDTO);
+        TrocaItem trocaItemSave = trocaItemRepository.save(trocaItem);
+        return trocaItemSave.getId();
+    }
+
     private void atualizaDadosRebelde(RebeldeDTO rebeldeDTO, Set<InventarioDTO> listInventario){
-        List<InventarioDTO> listInventarioDTO = new ArrayList<InventarioDTO>(listInventario);
+        List<InventarioDTO> listInventarioDTO = new ArrayList<>(listInventario);
         rebeldeDTO.setInventario(listInventarioDTO);
         rebeldeService.save(rebeldeDTO);
     }
@@ -113,7 +150,7 @@ public class TrocaItemService {
         }
     }
 
-    public Set<InventarioDTO> calculaTrocaItens(Set<InventarioDTO> inventarioRebelde, List<InventarioDTO> listItensTroca, char operador){
+    private Set<InventarioDTO> calculaTrocaItens(Set<InventarioDTO> inventarioRebelde, List<InventarioDTO> listItensTroca, char operador){
         Set<InventarioDTO> inventarioList = new HashSet<>();
         List<InventarioDTO> listaAux = new ArrayList<>();
 
@@ -133,29 +170,13 @@ public class TrocaItemService {
         return inventarioList;
     }
 
-    public TrocaItemDTO verifyIsExistsTroca(Long id) throws TrocaItemNotFoundException {
-        return trocaItemRepository.findById(id).map(trocaItemMapper::toDTO)
-                .orElseThrow(() -> new TrocaItemNotFoundException(id));
-    }
-
-    public void verificaQuantidadeRebeldesParaTroca(List<RebeldeDTO> rebeldeList) throws QuantidadeRebeldeParaTrocaException {
+    private void verificaQuantidadeRebeldesParaTroca(List<RebeldeDTO> rebeldeList) throws QuantidadeRebeldeParaTrocaException {
         if(rebeldeList.stream().count() != 2 ){
             throw new QuantidadeRebeldeParaTrocaException();
         }
     }
 
-    public void hasTraidor(List<RebeldeDTO> rebeldeList) throws TraidorException {
-        boolean hasTraidor = rebeldeList.stream()
-                .anyMatch( rebeldeDTO -> {
-                    return rebeldeDTO.isTraidor();
-                });
-        if (hasTraidor){
-            throw new TraidorException();
-        }
-    }
-
-    public void validaItensParaTroca(List<RebeldeDTO> rebeldeList, TrocaItemDTO trocaItemDTO) throws ItensInvalidosParaTrocaException {
-
+    private void validaItensParaTroca(List<RebeldeDTO> rebeldeList, TrocaItemDTO trocaItemDTO) throws ItensInvalidosParaTrocaException {
         for (RebeldeDTO rebeldeItem: rebeldeList) {
             if (rebeldeItem.getId().equals(trocaItemDTO.getIdRebeldeSolicitante())){
                 compararListItensParaTroca(rebeldeItem.getInventario(),
@@ -171,7 +192,8 @@ public class TrocaItemService {
                                             String perfilSolicitacao) throws ItensInvalidosParaTrocaException {
         long count = 0L;
         count = inventarioRebelde.stream().filter(inventario -> {
-            return listItensTroca.stream().filter(itensList -> itensList.getItemInventario().equals(inventario.getItemInventario())).findAny().isPresent();
+            return listItensTroca.stream().filter(itensList ->
+                    itensList.getItemInventario().equals(inventario.getItemInventario())).findAny().isPresent();
         }).count();
 
         if (count != listItensTroca.size()){
@@ -179,8 +201,8 @@ public class TrocaItemService {
         }
     }
 
-    public void validaPontosParaTroca(TrocaItemDTO trocaItemDTO) throws QuantidadePontosInvalidoException {
-        Integer somaPontosSolicitante = 0, somaPontosSolicitado  = 0;
+    private void validaPontosParaTroca(TrocaItemDTO trocaItemDTO) throws QuantidadePontosInvalidoException {
+        Integer somaPontosSolicitante, somaPontosSolicitado  = 0;
         somaPontosSolicitante = somaPontosItem(trocaItemDTO.getListItensRebeldeSolicitante());
         somaPontosSolicitado = somaPontosItem(trocaItemDTO.getListItensRebeldeSolicitado());
 
@@ -189,7 +211,7 @@ public class TrocaItemService {
         }
     }
 
-    public Integer somaPontosItem(List<InventarioDTO> listItemParaTroca){
+    private Integer somaPontosItem(List<InventarioDTO> listItemParaTroca){
         Integer soma = 0;
         for(InventarioDTO itemInventario : listItemParaTroca){
             soma += defineBaseCalculoParaTroca(itemInventario);
@@ -197,7 +219,7 @@ public class TrocaItemService {
         return soma;
     }
 
-    public Integer defineBaseCalculoParaTroca(InventarioDTO inventarioItem) {
+    private Integer defineBaseCalculoParaTroca(InventarioDTO inventarioItem) {
         switch (inventarioItem.getItemInventario()){
             case "ARMA":
                 return calculate(ARMA, inventarioItem.getQuantidade(), '*');
@@ -212,7 +234,6 @@ public class TrocaItemService {
     }
 
     private Integer calculate(Integer baseCalculo, Integer quantidade, char operador){
-
         switch (operador){
             case SOMA:
                 return baseCalculo + quantidade;
@@ -224,33 +245,6 @@ public class TrocaItemService {
                 return baseCalculo / quantidade;
             default:
                 return 0;
-        }
-    }
-
-    public List<Long> recuperaIdsRebeldes(TrocaItemDTO trocaItemDTO){
-        return Arrays.asList(trocaItemDTO.getIdRebeldeSolicitante(), trocaItemDTO.getIdRebeldeSolicitado());
-    }
-
-    public List<TrocaItemDTO> searchSolicitacaoTrocaEnviada(Long id) {
-        return trocaItemRepository.findByIdRebeldeSolicitante(id)
-                .stream().map(trocaItemMapper::toDTO).collect(Collectors.toList());
-    }
-
-    public List<TrocaItemDTO> searchSolicitacaoRecebida(Long id) {
-        return trocaItemRepository.findByIdRebeldeSolicitado(id)
-                .stream().map(trocaItemMapper::toDTO).collect(Collectors.toList());
-    }
-
-    public void rejeitaTroca(Long id) throws TrocaItemNotFoundException, SolicitacaoTrocaException {
-        verifyIsExistsTroca(id);
-        Optional<Object> trocaItemDTO = trocaItemRepository.findById(id)
-                .map(trocaItem -> {
-                    trocaItem.setStatusSolicitacaoTroca(StatusTroca.RECUSADO);
-                    return trocaItemRepository.save(trocaItem);
-                });
-        if (trocaItemDTO.isPresent()){
-            TrocaItemDTO trocaItem = TrocaItemDTO.builder().build();
-            atualizaQuantidadeSolicitacaoTrocaRebelde(recuperaIdsRebeldes(trocaItem), SUBTRACAO);
         }
     }
 }
