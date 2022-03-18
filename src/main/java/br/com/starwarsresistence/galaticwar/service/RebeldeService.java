@@ -23,7 +23,7 @@ public class RebeldeService {
     private static final Integer VALOR_CONTROLE = 1;
 
     private final RebeldeRepository rebeldeRepository;
-    private final RebeldeMapper rebeldeMapper;
+    private final RebeldeMapper rebeldeMapper = RebeldeMapper.INSTANCE;
 
     public List<RebeldeDTO> findAll(){
         return rebeldeRepository.findAll()

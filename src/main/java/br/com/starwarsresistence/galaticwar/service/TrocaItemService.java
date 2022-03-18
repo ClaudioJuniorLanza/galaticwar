@@ -30,7 +30,7 @@ public class TrocaItemService {
     private static final char DIVISAO = '/';
 
     private final RebeldeService rebeldeService;
-    private final TrocaItemMapper trocaItemMapper;
+    private final TrocaItemMapper trocaItemMapper = TrocaItemMapper.INSTANCE;
     private final TrocaItemRepository trocaItemRepository;
 
     public Long solicitaTroca(TrocaItemDTO trocaItemDTO) throws TraidorException, QuantidadeRebeldeParaTrocaException,
