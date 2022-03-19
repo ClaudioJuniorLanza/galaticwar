@@ -35,8 +35,8 @@ public class RebeldeController {
     @Operation(description = "Retorna um Rebelde a partir do seu ID")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<RebeldeDTO> findRebeldeById(@PathVariable Long idRebelde) throws RebeldeNotFoundException {
-        return rebeldeService.findById(idRebelde);
+    public Optional<RebeldeDTO> findRebeldeById(@PathVariable Long id) throws RebeldeNotFoundException {
+        return rebeldeService.findById(Long.valueOf(id));
     }
 
     @Operation(description = "Realiza a criação de um rebelde")
@@ -56,8 +56,8 @@ public class RebeldeController {
     @Operation(description = "Atualiza a localização do Rebelde")
     @PatchMapping("/update-localizacao/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateLocalizacao(@PathVariable Long idRebelde, @RequestBody LocalizacaoDTO localizacaoDTO) throws RebeldeNotFoundException {
-        rebeldeService.updateLocalizacao(idRebelde, localizacaoDTO);
+    public void updateLocalizacao(@PathVariable Long id, @RequestBody LocalizacaoDTO localizacaoDTO) throws RebeldeNotFoundException {
+        rebeldeService.updateLocalizacao(id, localizacaoDTO);
     }
 
     @Operation(description = "Realiza uma solicitação de troca de itens do inventário entre 2 rebeldes")
@@ -70,14 +70,14 @@ public class RebeldeController {
     }
 
     @Operation(description = "Confirma solicitação troca de itens entre rebeldes")
-    @GetMapping("/confirm-negociacao/{id}")
+    @GetMapping("/confirm-negociacao/{idSolicitacao}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void confirmaTroca(@PathVariable Long idSolicitacao) throws StatusTrocaException, TrocaItemNotFoundException, RebeldeNotFoundException, SolicitacaoTrocaException {
         trocaItemService.efetuaTroca(idSolicitacao);
     }
 
     @Operation(description = "Rejeita solicitação troca de itens entre rebeldes")
-    @GetMapping("/rejeita-negociacao/{id}")
+    @GetMapping("/rejeita-negociacao/{idSolicitacao}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void rejeitaTroca(@PathVariable Long idSolicitacao) throws TrocaItemNotFoundException, SolicitacaoTrocaException {
         trocaItemService.rejeitaTroca(idSolicitacao);
@@ -86,15 +86,15 @@ public class RebeldeController {
     @Operation(description = "Retorna uma lista de solicitações enviadas para troca de itens do inventário")
     @GetMapping("/solicitacoes-troca-enviada/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<TrocaItemDTO> searchSolicitacaoTrocaEnviada(@PathVariable Long idRebelde) {
-        return trocaItemService.searchSolicitacaoTrocaEnviada(idRebelde);
+    public List<TrocaItemDTO> searchSolicitacaoTrocaEnviada(@PathVariable Long id) {
+        return trocaItemService.searchSolicitacaoTrocaEnviada(id);
     }
 
     @Operation(description = "Retorna uma lista de solicitações recebidas para troca de itens do inventário")
     @GetMapping("/solicitacoes-troca-recebida/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<TrocaItemDTO> searchSolicitacaoTrocaRecebida(@PathVariable Long idRebelde) {
-        return trocaItemService.searchSolicitacaoRecebida(idRebelde);
+    public List<TrocaItemDTO> searchSolicitacaoTrocaRecebida(@PathVariable Long id) {
+        return trocaItemService.searchSolicitacaoRecebida(id);
     }
 
 }

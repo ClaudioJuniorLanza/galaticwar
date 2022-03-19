@@ -64,12 +64,17 @@ public class TrocaItemService {
         verifyIsExistsTroca(id);
         Optional<Object> trocaItemDTO = trocaItemRepository.findById(id)
                 .map(trocaItem -> {
-                    trocaItem.setStatusSolicitacaoTroca(StatusTroca.RECUSADO);
+                    if(trocaItem.getStatusSolicitacaoTroca().equals(StatusTroca.PENDENTE.toString())){
+                        trocaItem.setStatusSolicitacaoTroca(StatusTroca.RECUSADO);
+                    }else {
+                        throw new StatusTrocaException(trocaItem.getStatusSolicitacaoTroca().toString());
+                    }
                     return trocaItemRepository.save(trocaItem);
                 });
         if (trocaItemDTO.isPresent()){
             TrocaItemDTO trocaItem = TrocaItemDTO.builder().build();
-            atualizaQuantidadeSolicitacaoTrocaRebelde(recuperaIdsRebeldes(trocaItem), SUBTRACAO);
+            if (trocaItem.getStatusSolicitacaoTroca().equals(StatusTroca.RECUSADO.toString()))
+                atualizaQuantidadeSolicitacaoTrocaRebelde(recuperaIdsRebeldes(trocaItem), SUBTRACAO);
         }
     }
 
@@ -145,7 +150,8 @@ public class TrocaItemService {
     }
 
     private void verificaStatusTroca(TrocaItemDTO trocaItemDTO) throws StatusTrocaException {
-        if (trocaItemDTO.getStatusSolicitacaoTroca().equals(StatusTroca.RECUSADO.getDescricao())){
+        if (trocaItemDTO.getStatusSolicitacaoTroca().equals(StatusTroca.RECUSADO.toString()) ||
+                trocaItemDTO.getStatusSolicitacaoTroca().equals(StatusTroca.ACEITO.toString())){
             throw new StatusTrocaException(trocaItemDTO.getStatusSolicitacaoTroca());
         }
     }
