@@ -6,6 +6,8 @@ import br.com.starwarsresistence.galaticwar.dto.response.MessageResponse;
 import br.com.starwarsresistence.galaticwar.enums.ItensInventario;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -59,7 +61,6 @@ public class RelatorioRebeldeService {
         return messageList;
     }
 
-
     private double obtemMediaItensInventario(List<InventarioDTO> inventarioDTOList, String tipoEquipamento) {
         return inventarioDTOList.stream()
                 .filter(inventarioDTO -> inventarioDTO.getItemInventario().equals(tipoEquipamento))
@@ -69,7 +70,8 @@ public class RelatorioRebeldeService {
     }
 
     private List<RebeldeDTO> getRebeldeList() {
-        return rebeldeService.findAll();
+        Pageable pageable = null;
+        return rebeldeService.findAll(pageable);
     }
 
     private Double calculate(Long quantidade, Integer total) {

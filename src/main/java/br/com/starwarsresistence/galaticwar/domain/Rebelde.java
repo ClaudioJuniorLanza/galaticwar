@@ -2,16 +2,15 @@ package br.com.starwarsresistence.galaticwar.domain;
 
 import br.com.starwarsresistence.galaticwar.enums.Genero;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "rebelde")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Rebelde {
@@ -45,7 +44,7 @@ public class Rebelde {
     private List<Inventario> inventario;
 
     @Schema(description = "Quantidade de vezes que foi reportado o reelde como traidor")
-    @Column(columnDefinition = "NUMBER(2) default 0", insertable = false, updatable = true)
+    @Column(insertable = false, updatable = true)
     private Integer reportTraidor;
 
     @Schema(description = "Rebelde traidor")
@@ -53,7 +52,7 @@ public class Rebelde {
     private boolean traidor;
 
     @Schema(description = "Quantidade de solicitações de troca")
-    @Column(columnDefinition = "NUMBER(2) default 0", insertable = false, updatable = true)
+    @Column(insertable = false, updatable = true)
     private Integer quantidadeSolicitacao;
 
 }

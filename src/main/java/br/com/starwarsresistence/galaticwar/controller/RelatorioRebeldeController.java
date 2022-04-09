@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,6 +24,7 @@ public class RelatorioRebeldeController {
     private final RelatorioRebeldeService relatorioRebeldeService;
 
     @Operation(description = "Retorna a porcentagem de Traidores")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/porcentagem-traidores")
     @ResponseStatus(HttpStatus.OK)
     public MessageResponse getPorcentagemTraidores(){
@@ -31,6 +33,7 @@ public class RelatorioRebeldeController {
     }
 
     @Operation(description = "Retorna a porcentagem de Rebeldes válidos")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/porcentagem-rebeldes")
     @ResponseStatus(HttpStatus.OK)
     public MessageResponse getPorcentagemRebeldes(){
@@ -39,6 +42,7 @@ public class RelatorioRebeldeController {
     }
 
     @Operation(description = "Obtem a media dos recursos por rebelde")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/media-recursos")
     @ResponseStatus(HttpStatus.OK)
     public List<MessageResponse> getMediaRecursos(){

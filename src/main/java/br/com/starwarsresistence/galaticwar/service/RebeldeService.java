@@ -9,6 +9,7 @@ import br.com.starwarsresistence.galaticwar.exceptions.SolicitacaoTrocaException
 import br.com.starwarsresistence.galaticwar.repository.RebeldeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +26,8 @@ public class RebeldeService {
     private final RebeldeRepository rebeldeRepository;
     private final RebeldeMapper rebeldeMapper = RebeldeMapper.INSTANCE;
 
-    public List<RebeldeDTO> findAll(){
-        return rebeldeRepository.findAll()
+    public List<RebeldeDTO> findAll(Pageable pageable){
+        return rebeldeRepository.findAll(pageable)
                 .stream()
                 .map(rebeldeMapper::toDTO)
                 .map(rebeldeDTO -> {

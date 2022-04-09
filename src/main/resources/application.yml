@@ -1,12 +1,22 @@
 spring:
   datasource:
-    url: jdbc:h2:file:/home/clanca/Documentos/LetsCode/galaticwar/database
-    username: sa
-    password: password
-    driverClassName: org.h2.Driver
+    url: jdbc:postgresql://localhost:5432/galaticwar
+    username: postgres
+    password: 1234
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+    generate-ddl: true
+    defer-datasource-initialization: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+springdoc:
+  api-docs:
+    enabled: false
 server:
   port: 8081
+security:
+  jwt:
+    expiracao: 30
+    chave-assinatura: Y3Vyc28gZGUgc3ByaW5nIGV4cGVydA==
