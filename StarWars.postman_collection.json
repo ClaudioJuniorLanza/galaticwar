@@ -1,0 +1,339 @@
+{
+	"info": {
+		"_postman_id": "8661bb2e-80ab-4c9d-8d0a-cf2014656bc9",
+		"name": "StarWars",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8081/api/v1/rebelde",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Rebelde002\",\n    \"idade\": 21,\n    \"genero\": \"FEMININO\",\n    \"localizacao\" : {\n        \"nomeGalaxia\": \"Plutão\",\n        \"latitude\": \"48° N\",\n        \"longitude\": \"50° L\"\n    },\n    \"inventario\": [\n        {\n            \"itemInventario\": \"ARMA\",\n            \"quantidade\": 2\n        },\n        {\n            \"itemInventario\": \"MUNICAO\",\n            \"quantidade\": 2\n        },\n        {\n            \"itemInventario\": \"AGUA\",\n            \"quantidade\": 2\n        },\n        {\n            \"itemInventario\": \"COMIDA\",\n            \"quantidade\": 2\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/relatorio-rebelde/media-recursos",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/relatorio-rebelde/media-recursos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"relatorio-rebelde",
+						"media-recursos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/update-localizacao/1",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nomeGalaxia\": \"Saturno\",\n    \"latitude\": \"50° S\",\n    \"longitude\": \"50° W\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/update-localizacao/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"update-localizacao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/related-traidor/1",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/related-traidor/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"related-traidor",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/negociar-itens",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"idRebeldeSolicitante\": 1,\n    \"idRebeldeSolicitado\": 2,\n    \"listItensRebeldeSolicitante\": [\n        {\n            \"itemInventario\": \"MUNICAO\",\n            \"quantidade\": 1\n        }\n    ],\n    \"listItensRebeldeSolicitado\": [\n        {\n            \"itemInventario\": \"AGUA\",\n            \"quantidade\": 1\n        },\n        {\n            \"itemInventario\": \"COMIDA\",\n            \"quantidade\": 1\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/negociar-itens",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"negociar-itens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/relatorio-rebelde/porcentagem-traidores",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/relatorio-rebelde/porcentagem-traidores",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"relatorio-rebelde",
+						"porcentagem-traidores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/relatorio-rebelde/porcentagem-rebeldes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/relatorio-rebelde/porcentagem-rebeldes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"relatorio-rebelde",
+						"porcentagem-rebeldes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/confirm-negociacao/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/confirm-negociacao/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"confirm-negociacao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/rejeita-negociacao/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/rejeita-negociacao/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"rejeita-negociacao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/solicitacoes-troca-enviada/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/solicitacoes-troca-enviada/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"solicitacoes-troca-enviada",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/v1/rebelde/solicitacoes-troca-recebida/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rebelde/solicitacoes-troca-recebida/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rebelde",
+						"solicitacoes-troca-recebida",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
